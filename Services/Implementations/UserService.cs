@@ -1,51 +1,105 @@
-﻿using Domain.Entities;
+﻿using Domain.Data;
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Models.Dtos;
 using Services.Interfaces;
 using Shared;
+using Shared.Configs;
+using Shared.Utils;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Services.Implementations
 {
     public class UserService : IUserService
     {
-        private readonly AppSettings _appSettings;
+        private readonly AppDbContext _context;
 
-        public UserService(IOptions<AppSettings> appSettings)
+        public UserService(AppDbContext context)
         {
-            _appSettings = appSettings.Value;
+            _context = context;
         }
 
-        public AppUser Authenticate(string username, string password)
+        public async Task<TokenDto> Authenticate(string username, string password)
         {
-            // TODO: Использовать контекст
-            var users = new List<AppUser> { new AppUser { UserName = "112", PasswordHash = "221", Role = "User" } };
-            var user = users.SingleOrDefault(x => x.UserName == username && x.PasswordHash == password);
-
-            if (user == null)
-                return null;
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var identity = await GetIdentity(username, password);
+            if (identity == null)
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role)
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
+                throw new ArgumentException("Invalid username or password.");
+            }
 
-            return user;
+            var now = DateTime.UtcNow;
+            // создаем JWT-токен
+            var jwt = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    notBefore: now,
+                    claims: identity.Claims,
+                    expires: now.Add(TimeSpan.FromDays(AuthOptions.LIFETIME)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            var response = new TokenDto
+            {
+                AccessToken = encodedJwt,
+                UserName = identity.Name
+            };
+
+            return response;
+        }
+
+        public async Task Registration(RegistrationDto model)
+        {
+            var users = _context.Users;
+            if (string.IsNullOrWhiteSpace(model.UserName) || model.UserName.Length < 6)
+            {
+                throw new ArgumentException("Username is incorrect");
+            }
+            if (string.IsNullOrWhiteSpace(model.Password) || model.Password.Length < 6)
+            {
+                throw new ArgumentException("Password is incorrect");
+            }
+            if (await users.AnyAsync(u => u.UserName == model.UserName))
+            {
+                throw new ArgumentException("Username already exist");
+            }
+            var user = new AppUser
+            {
+                Nickname = model.Nickname,
+                UserName = model.UserName,
+                PasswordHash = PasswordHasher.HashPassword(model.Password),
+                Role = Roles.USER
+            };
+            users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<ClaimsIdentity> GetIdentity(string username, string password)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            if (user != null)
+            {
+                if (PasswordHasher.VerifyHashedPassword(user.PasswordHash, password))
+                {
+                    var claims = new List<Claim> {
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+                        new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+                    };
+                    ClaimsIdentity claimsIdentity =
+                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                        ClaimsIdentity.DefaultRoleClaimType);
+                    return claimsIdentity;
+                }
+            }
+
+            return null;
         }
     }
 }

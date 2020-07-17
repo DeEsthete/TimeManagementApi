@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Models.Dtos
 {
-    public class AutheticateDto
+    public class AuthenticationDto
     {
+        [Required]
         public string Username { get; set; }
-
+        [Required]
         public string Password { get; set; }
     }
 }

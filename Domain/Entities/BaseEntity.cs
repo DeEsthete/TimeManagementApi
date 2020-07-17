@@ -7,7 +7,7 @@ namespace Domain.Entities
     public class BaseEntity
     {
         public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public DateTime DateCreate { get; set; } = DateTime.UtcNow;
+        public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
 }
