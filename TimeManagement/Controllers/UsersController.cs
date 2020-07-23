@@ -14,6 +14,7 @@ using Shared;
 namespace TimeManagement.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -24,6 +25,7 @@ namespace TimeManagement.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate(AuthenticationDto model)
         {
@@ -31,6 +33,7 @@ namespace TimeManagement.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpPost("registration")]
         public async Task<IActionResult> Registration([FromBody]RegistrationDto model)
         {
@@ -38,11 +41,11 @@ namespace TimeManagement.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpGet("info")]
-        public async Task<IActionResult> Info()
+        [HttpGet]
+        public async Task<IActionResult> GetUserInfoByUserName()
         {
-            var user = new { username = User.Identity.Name };
+            var userName = User.Identity.Name;
+            var user = await _userService.GetUserInfoByUserName(userName);
             return Ok(user);
         }
     }
