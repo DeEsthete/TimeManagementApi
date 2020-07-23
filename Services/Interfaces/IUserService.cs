@@ -11,5 +11,6 @@ namespace Services.Interfaces
     {
         Task<TokenDto> Authenticate(string username, string password);
         Task Registration(RegistrationDto model);
+        Task<UserDto> GetUserInfoByUserName(string userName);
     }
 }

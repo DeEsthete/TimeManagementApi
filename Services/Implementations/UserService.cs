@@ -27,9 +27,9 @@ namespace Services.Implementations
             _context = context;
         }
 
-        public async Task<TokenDto> Authenticate(string username, string password)
+        public async Task<TokenDto> Authenticate(string userName, string password)
         {
-            var identity = await GetIdentity(username, password);
+            var identity = await GetIdentity(userName, password);
             if (identity == null)
             {
                 throw new ArgumentException("Invalid username or password.");
@@ -79,6 +79,16 @@ namespace Services.Implementations
             };
             users.Add(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserDto> GetUserInfoByUserName(string userName)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (user is null)
+            {
+                throw new Exception("User with this username was not found");
+            }
+            return new UserDto(user);
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string username, string password)
