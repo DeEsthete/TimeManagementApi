@@ -6,8 +6,8 @@ namespace Domain.Entities
 {
     public class Period : BaseEntity
     {
-        public long ActionId { get; set; }
-        public Deed Action { get; set; }
+        public long DeedId { get; set; }
+        public Deed Deed { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string Description { get; set; }

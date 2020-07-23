@@ -11,8 +11,8 @@ namespace Domain.Entities
         public PurposeStatus PurposeStatus { get; set; }
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
-        public long ActionId { get; set; }
-        public Deed Action { get; set; }
+        public long DeedId { get; set; }
+        public Deed Deed { get; set; }
         public int RequiredHours { get; set; }
     }
 }

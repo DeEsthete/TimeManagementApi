@@ -9,6 +9,7 @@ namespace Domain.Entities
         public long UserId { get; set; }
         public AppUser User { get; set; }
         public string Name { get; set; }
+        public bool IsArchived { get; set; }
         public IEnumerable<Period> Periods { get; set; }
         public IEnumerable<Purpose> Purposes { get; set; }
     }
