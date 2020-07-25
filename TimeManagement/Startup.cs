@@ -59,6 +59,10 @@ namespace TimeManagement
 
             // DI
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IDeedService, DeedService>();
+            services.AddScoped<IPeriodService, PeriodService>();
+            services.AddScoped<IPurposeService, PurposeService>();
+            services.AddScoped<IScheduleService, ScheduleService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
