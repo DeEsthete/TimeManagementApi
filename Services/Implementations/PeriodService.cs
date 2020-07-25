@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
 using Services.Interfaces;
 using Shared.Constants;
+using Shared.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,15 @@ namespace Services.Implementations
             {
                 throw new Exception("Deed does not belong to you");
             }
+
+            var isInRange = await _context.Periods.AnyAsync(m =>
+                DateChecker.DateRangeIsInRange(m.StartDate, m.EndDate, periodDto.StartDate, periodDto.EndDate)
+            );
+            if (isInRange)
+            {
+                throw new Exception("The period should not fall within the time frame of another period");
+            }
+
             var period = periodDto.ToPeriod();
             _context.Periods.Add(period);
             await _context.SaveChangesAsync();
@@ -78,7 +88,8 @@ namespace Services.Implementations
         public async Task<PeriodDto> GetLastPeriod(string userName)
         {
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
-            var period = await _context.Periods.LastOrDefaultAsync(p => p.Deed.UserId == user.Id);
+            var period = await _context.Periods.OrderBy(p => p.DateCreate)
+                                               .LastOrDefaultAsync(p => p.Deed.UserId == user.Id);
             return period != null ? new PeriodDto(period) : null;
         }
 
