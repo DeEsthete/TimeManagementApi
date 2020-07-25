@@ -12,11 +12,11 @@ namespace TimeManagement.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class DeedController : ControllerBase
+    public class DeedsController : ControllerBase
     {
         private readonly IDeedService _deedService;
 
-        public DeedController(IDeedService deedService)
+        public DeedsController(IDeedService deedService)
         {
             _deedService = deedService;
         }

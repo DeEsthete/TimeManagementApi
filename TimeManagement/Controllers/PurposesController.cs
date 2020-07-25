@@ -12,11 +12,11 @@ namespace TimeManagement.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class PurposeController : ControllerBase
+    public class PurposesController : ControllerBase
     {
         private readonly IPurposeService _purposeService;
 
-        public PurposeController(IPurposeService purposeService)
+        public PurposesController(IPurposeService purposeService)
         {
             _purposeService = purposeService;
         }

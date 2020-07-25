@@ -12,11 +12,11 @@ namespace TimeManagement.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class PeriodController : ControllerBase
+    public class PeriodsController : ControllerBase
     {
         private readonly IPeriodService _periodService;
 
-        public PeriodController(IPeriodService periodService)
+        public PeriodsController(IPeriodService periodService)
         {
             _periodService = periodService;
         }
