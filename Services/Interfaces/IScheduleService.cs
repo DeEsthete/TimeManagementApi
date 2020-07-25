@@ -9,6 +9,7 @@ namespace Services.Interfaces
     public interface IScheduleService
     {
         Task<long> AddSchedule(string userName, ScheduleDto scheduleDto);
+        Task<long> AddSchedulePeriod(string userName, SchedulePeriodDto schedulePeriodDto);
         Task<ScheduleDto> GetScheduleByDate(string userName, DateTime scheduleDate);
         Task<IEnumerable<SchedulePeriodDto>> GetSchedulePeriods(string userName, long scheduleId);
     }
