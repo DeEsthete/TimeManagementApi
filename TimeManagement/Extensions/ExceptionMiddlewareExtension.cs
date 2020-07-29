@@ -27,8 +27,8 @@ namespace TimeManagement.Extensions
 
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                         {
-                            context.Response.StatusCode,
-                            Message = contextFeature.Error.InnerException != null ? contextFeature.Error.InnerException.Message : contextFeature.Error.Message
+                            statusCode = context.Response.StatusCode,
+                            message = contextFeature.Error.InnerException != null ? contextFeature.Error.InnerException.Message : contextFeature.Error.Message
                         }));
                     }
                 });
