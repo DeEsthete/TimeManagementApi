@@ -24,6 +24,7 @@ namespace Domain.Data
         {
             await CreateReferences();
             await CreateDefaultUsers();
+            await CreateDefaultDeeds();
         }
 
         private async Task CreateDefaultUsers()
@@ -67,6 +68,38 @@ namespace Domain.Data
             };
 
             purposeStatuses.AddRange(defaultPurposeStatuses.Where(dps => !purposeStatuses.Any(ps => ps.Code == dps.Code)));
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CreateDefaultDeeds()
+        {
+            var userId = _context.Users.First(u => u.UserName == "DefaultUser").Id;
+            var deeds = _context.Deeds;
+            List<Deed> defaultDeeds = new List<Deed>
+            {
+                new Deed
+                {
+                    UserId = userId,
+                    Name = "Programming",
+                },
+                new Deed
+                {
+                    UserId = userId,
+                    Name = "Reading",
+                },
+                new Deed
+                {
+                    UserId = userId,
+                    Name = "Writing",
+                },
+                new Deed
+                {
+                    UserId = userId,
+                    Name = "Sport",
+                },
+            };
+
+            deeds.AddRange(defaultDeeds.Where(dd => !deeds.Any(d => d.Name == dd.Name)).ToList());
             await _context.SaveChangesAsync();
         }
     }
