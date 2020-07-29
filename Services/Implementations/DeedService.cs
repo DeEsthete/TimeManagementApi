@@ -44,12 +44,18 @@ namespace Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<DeedDto>> GetUserDeeds(string userName, bool isArchiveInclusive)
+        public async Task<IEnumerable<DeedDto>> GetUserDeeds(string userName, bool isArchiveInclusive, string filter)
         {
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
-            return _context.Deeds.Where(d => d.UserId == user.Id)
-                                 .ToList()
-                                 .Select(d => new DeedDto(d));
+            var query = _context.Deeds.Where(d => d.UserId == user.Id);
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                query = _context.Deeds.Where(d => d.Name.ToLower().Contains(filter.ToLower()));
+            }
+
+            return query.ToList()
+                        .Select(d => new DeedDto(d));
         }
 
         public async Task<IEnumerable<DeedPeriodsCountDto>> GetDeedsPeriodsCount(string userName, DateTime from, DateTime to)

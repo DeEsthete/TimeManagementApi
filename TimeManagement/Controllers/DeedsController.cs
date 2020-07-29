@@ -38,10 +38,10 @@ namespace TimeManagement.Controllers
         }
 
         [HttpGet("{isArchiveInclusive}")]
-        public async Task<IActionResult> GetUserDeeds(bool isArchiveInclusive)
+        public async Task<IActionResult> GetUserDeeds(bool isArchiveInclusive, [FromQuery]string filter)
         {
             var userName = User.Identity.Name;
-            var result = await _deedService.GetUserDeeds(userName, isArchiveInclusive);
+            var result = await _deedService.GetUserDeeds(userName, isArchiveInclusive, filter);
             return Ok(result);
         }
 
