@@ -7,13 +7,13 @@ namespace Models.Dtos
 {
     public class SchedulePeriodDto
     {
-        public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public long? Id { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
         public long ScheduleId { get; set; }
         public long DeedId { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Description { get; set; }
 
         public SchedulePeriodDto()
@@ -37,9 +37,9 @@ namespace Models.Dtos
         {
             return new SchedulePeriod
             {
-                Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
+                Id = Id.GetValueOrDefault(),
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
                 ScheduleId = ScheduleId,
                 DeedId = DeedId,
                 StartDate = StartDate,

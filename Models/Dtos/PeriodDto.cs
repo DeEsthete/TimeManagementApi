@@ -7,9 +7,9 @@ namespace Models.Dtos
 {
     public class PeriodDto
     {
-        public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public long? Id { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
         public long DeedId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -35,9 +35,9 @@ namespace Models.Dtos
         {
             return new Period
             {
-                Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
+                Id = Id.GetValueOrDefault(),
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
                 DeedId = DeedId,
                 StartDate = StartDate,
                 EndDate = EndDate,

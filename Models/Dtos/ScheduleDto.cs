@@ -7,9 +7,9 @@ namespace Models.Dtos
 {
     public class ScheduleDto
     {
-        public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public long? Id { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
         public DateTime ScheduleDate { get; set; }
 
         public ScheduleDto()
@@ -29,9 +29,9 @@ namespace Models.Dtos
         {
             return new Schedule
             {
-                Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
+                Id = Id.GetValueOrDefault(),
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
                 ScheduleDate = ScheduleDate
             };
         }

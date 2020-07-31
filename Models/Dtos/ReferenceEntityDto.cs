@@ -8,8 +8,8 @@ namespace Models.Dtos
     public class ReferenceEntityDto
     {
         public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
 
@@ -32,8 +32,8 @@ namespace Models.Dtos
             return new ReferenceEntity
             {
                 Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
                 Name = Name,
                 Code = Code
             };

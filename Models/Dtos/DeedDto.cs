@@ -8,14 +8,13 @@ namespace Models.Dtos
 {
     public class DeedDto
     {
-        public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
-        [Required]
-        public long UserId { get; set; }
+        public long? Id { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
+        public long? UserId { get; set; }
         [Required]
         public string Name { get; set; }
-        public bool IsArchived { get; set; }
+        public bool? IsArchived { get; set; }
 
         public DeedDto()
         {
@@ -36,12 +35,12 @@ namespace Models.Dtos
         {
             return new Deed
             {
-                Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
-                UserId = UserId,
+                Id = Id.GetValueOrDefault(),
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
+                UserId = UserId.GetValueOrDefault(),
                 Name = Name,
-                IsArchived = IsArchived
+                IsArchived = IsArchived.GetValueOrDefault()
             };
         }
     }

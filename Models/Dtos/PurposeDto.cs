@@ -7,16 +7,16 @@ namespace Models.Dtos
 {
     public class PurposeDto
     {
-        public long Id { get; set; }
-        public DateTime DateCreate { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public long? Id { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateUpdate { get; set; }
         public string Name { get; set; }
-        public long PurposeStatusId { get; set; }
+        public long? PurposeStatusId { get; set; }
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
         public long DeedId { get; set; }
         public int RequiredHours { get; set; }
-        public int HaveHours { get; set; }
+        public int? HaveHours { get; set; }
 
         public PurposeDto()
         {
@@ -40,11 +40,11 @@ namespace Models.Dtos
         {
             return new Purpose
             {
-                Id = Id,
-                DateCreate = DateCreate,
-                DateUpdate = DateUpdate,
+                Id = Id.GetValueOrDefault(),
+                DateCreate = DateCreate.GetValueOrDefault(),
+                DateUpdate = DateUpdate.GetValueOrDefault(),
                 Name = Name,
-                PurposeStatusId = PurposeStatusId,
+                PurposeStatusId = PurposeStatusId.GetValueOrDefault(),
                 DateStart = DateStart,
                 DateEnd = DateEnd,
                 DeedId = DeedId,
