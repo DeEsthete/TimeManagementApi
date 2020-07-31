@@ -49,6 +49,11 @@ namespace Services.Implementations
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
             var query = _context.Deeds.Where(d => d.UserId == user.Id);
 
+            if (!isArchiveInclusive)
+            {
+                query = query.Where(d => !d.IsArchived);
+            }
+
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 query = _context.Deeds.Where(d => d.Name.ToLower().Contains(filter.ToLower()));

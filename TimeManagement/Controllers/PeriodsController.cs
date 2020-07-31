@@ -21,14 +21,6 @@ namespace TimeManagement.Controllers
             _periodService = periodService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPeriodsByDate()
-        {
-            var userName = User.Identity.Name;
-            var result = await _periodService.GetLastPeriod(userName);
-            return Ok(result);
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreatePeriod(PeriodDto periodDto)
         {
@@ -45,15 +37,7 @@ namespace TimeManagement.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> RemovePeriod(long id)
-        {
-            var userName = User.Identity.Name;
-            await _periodService.RemovePeriod(userName, id);
-            return NoContent();
-        }
-
-        [HttpGet("by-date/{from}/{to}")]
+        [HttpGet("{from}/{to}")]
         public async Task<IActionResult> GetPeriodsByDate(DateTime from, DateTime to)
         {
             var userName = User.Identity.Name;
@@ -67,6 +51,22 @@ namespace TimeManagement.Controllers
             var userName = User.Identity.Name;
             var result = await _periodService.GetPeriodsCountByDate(userName, from, to);
             return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLastPeriod()
+        {
+            var userName = User.Identity.Name;
+            var result = await _periodService.GetLastPeriod(userName);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemovePeriod(long id)
+        {
+            var userName = User.Identity.Name;
+            await _periodService.RemovePeriod(userName, id);
+            return NoContent();
         }
     }
 }

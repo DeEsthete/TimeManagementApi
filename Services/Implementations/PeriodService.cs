@@ -31,10 +31,14 @@ namespace Services.Implementations
                 throw new Exception("Deed does not belong to you");
             }
 
-            var isInRange = await _context.Periods.AnyAsync(m =>
+            var periodsInRange = await _context.Periods.Where(p => p.DeedId == deed.Id &&
+                                                                   p.StartDate >= periodDto.StartDate &&
+                                                                   p.EndDate.Value <= periodDto.EndDate.Value)
+                                                       .ToListAsync();
+            var inRange = periodsInRange.Any(m =>
                 DateChecker.DateRangeIsInRange(m.StartDate, m.EndDate, periodDto.StartDate, periodDto.EndDate)
             );
-            if (isInRange)
+            if (inRange)
             {
                 throw new Exception("The period should not fall within the time frame of another period");
             }
@@ -42,7 +46,7 @@ namespace Services.Implementations
             var period = periodDto.ToPeriod();
             _context.Periods.Add(period);
             await _context.SaveChangesAsync();
-            await SetPurposesStatus(deed.Id);
+            //await SetPurposesStatus(deed.Id);
             return period.Id;
         }
 
@@ -99,6 +103,7 @@ namespace Services.Implementations
             var periods = await _context.Periods.Where(p => p.Deed.UserId == user.Id &&
                                                             p.StartDate.Date > from.Date &&
                                                             p.StartDate.Date < to.Date)
+                                                .OrderByDescending(p => p.DateCreate)
                                                 .ToListAsync();
             var periodDtos = periods.Select(p => new PeriodDto(p));
             return periodDtos;
@@ -114,6 +119,7 @@ namespace Services.Implementations
             return periodsCount;
         }
 
+        // TODO: Поправить отправку в базу
         private async Task SetPurposesStatus(long deedId)
         {
             var failedPurposeStatus = _context.PurposeStatuses.FirstAsync(ps => ps.Code == ReferencesCodes.PURPOSE_FAILED);
@@ -124,16 +130,16 @@ namespace Services.Implementations
                                                p.DeedId == deedId &&
                                                p.DateEnd <= DateTime.UtcNow &&
                                                p.Deed.Periods.Where(pe => pe.EndDate.HasValue)
-                                                             .Select(pe => pe.EndDate - pe.StartDate)
-                                                             .Sum(pe => pe.Value.TotalHours) < p.RequiredHours)
+                                                             .Select(pe => pe.EndDate.Value - pe.StartDate)
+                                                             .Sum(pe => pe.TotalHours) < p.RequiredHours)
                                    .ForEachAsync(p => p.PurposeStatusId = failedPurposeStatus.Id);
 
             //complete
             await _context.Purposes.Where(p => p.DeedId == deedId &&
                                                p.DateEnd <= DateTime.UtcNow &&
                                                p.Deed.Periods.Where(pe => pe.EndDate.HasValue)
-                                                             .Select(pe => pe.EndDate - pe.StartDate)
-                                                             .Sum(pe => pe.Value.TotalHours) < p.RequiredHours)
+                                                             .Select(pe => pe.EndDate.Value - pe.StartDate)
+                                                             .Sum(pe => pe.TotalHours) < p.RequiredHours)
                                    .ForEachAsync(p => p.PurposeStatusId = failedPurposeStatus.Id);
 
             await _context.SaveChangesAsync();
