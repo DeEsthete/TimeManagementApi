@@ -11,7 +11,7 @@ namespace Domain.Entities
         public long DeedId { get; set; }
         public Deed Deed { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Description { get; set; }
     }
 }
