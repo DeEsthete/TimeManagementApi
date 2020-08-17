@@ -124,15 +124,30 @@ namespace Services.Implementations
         {
             var failedPurposeStatus = _context.PurposeStatuses.FirstAsync(ps => ps.Code == ReferencesCodes.PURPOSE_FAILED);
             var completePurposeStatus = _context.PurposeStatuses.FirstAsync(ps => ps.Code == ReferencesCodes.PURPOSE_COMPLETE);
+            var purposes = await _context.Purposes.Where(p => p.DeedId == deedId &&
+                                                        p.PurposeStatus.Code == ReferencesCodes.PURPOSE_NEW &&
+                                                        p.DateEnd <= DateTime.UtcNow)
+                                                  .ToListAsync();
 
             //failed
-            await _context.Purposes.Where(p => p.PurposeStatus.Code == ReferencesCodes.PURPOSE_NEW &&
-                                               p.DeedId == deedId &&
-                                               p.DateEnd <= DateTime.UtcNow &&
-                                               p.Deed.Periods.Where(pe => pe.EndDate.HasValue)
-                                                             .Select(pe => pe.EndDate.Value - pe.StartDate)
-                                                             .Sum(pe => pe.TotalHours) < p.RequiredHours)
-                                   .ForEachAsync(p => p.PurposeStatusId = failedPurposeStatus.Id);
+            purposes.Where(p => p.Deed.Periods.Where(pe => pe.EndDate.HasValue)
+                                              .Select(pe => pe.EndDate.Value - pe.StartDate)
+                                              .Sum(pe => pe.TotalHours) < p.RequiredHours);
+            foreach (var p in purposes)
+            {
+                var isFailed = _context.Deeds.First(d => d.Id == p.DeedId).Periods.Where(pe => pe.EndDate.HasValue)
+                                              .Select(pe => pe.EndDate.Value - pe.StartDate)
+                                              .Sum(pe => pe.TotalHours) < p.RequiredHours;
+                p.PurposeStatusId = failedPurposeStatus.Id;
+            }
+
+            //await _context.Purposes.Where(p => p.PurposeStatus.Code == ReferencesCodes.PURPOSE_NEW &&
+            //                                   p.DeedId == deedId &&
+            //                                   p.DateEnd <= DateTime.UtcNow &&
+            //                                   p.Deed.Periods.Where(pe => pe.EndDate.HasValue)
+            //                                                 .Select(pe => pe.EndDate.Value - pe.StartDate)
+            //                                                 .Sum(pe => pe.TotalHours) < p.RequiredHours)
+            //                       .ForEachAsync(p => p.PurposeStatusId = failedPurposeStatus.Id);
 
             //complete
             await _context.Purposes.Where(p => p.DeedId == deedId &&
