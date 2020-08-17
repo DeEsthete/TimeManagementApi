@@ -29,11 +29,27 @@ namespace TimeManagement.Controllers
             return Ok(result);
         }
 
+        [HttpPost("period")]
+        public async Task<IActionResult> AddSchedulePeriod(SchedulePeriodDto schedulePeriodDto)
+        {
+            var userName = User.Identity.Name;
+            var result = await _scheduleService.AddSchedulePeriod(userName, schedulePeriodDto);
+            return Ok(result);
+        }
+
         [HttpGet("{scheduleDate}")]
         public async Task<IActionResult> GetScheduleByDate(DateTime scheduleDate)
         {
             var userName = User.Identity.Name;
             var result = await _scheduleService.GetScheduleByDate(userName, scheduleDate);
+            return Ok(result);
+        }
+
+        [HttpGet("{from}/{to}")]
+        public async Task<IActionResult> GetScheduleByDate(DateTime from, DateTime to)
+        {
+            var userName = User.Identity.Name;
+            var result = await _scheduleService.GetScheduleByDate(userName, from, to);
             return Ok(result);
         }
 

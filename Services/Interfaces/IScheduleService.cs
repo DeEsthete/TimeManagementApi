@@ -11,6 +11,7 @@ namespace Services.Interfaces
         Task<long> AddSchedule(string userName, ScheduleDto scheduleDto);
         Task<long> AddSchedulePeriod(string userName, SchedulePeriodDto schedulePeriodDto);
         Task<ScheduleDto> GetScheduleByDate(string userName, DateTime scheduleDate);
+        Task<List<ScheduleDto>> GetScheduleByDate(string userName, DateTime from, DateTime to);
         Task<IEnumerable<SchedulePeriodDto>> GetSchedulePeriods(string userName, long scheduleId);
     }
 }

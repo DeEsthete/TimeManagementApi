@@ -65,7 +65,18 @@ namespace Services.Implementations
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
             var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.UserId == user.Id &&
                                                                              s.ScheduleDate.Date == scheduleDate.Date);
-            return new ScheduleDto(schedule);
+            return schedule != null ? new ScheduleDto(schedule) : null;
+        }
+
+        public async Task<List<ScheduleDto>> GetScheduleByDate(string userName, DateTime from, DateTime to)
+        {
+            var user = await _context.Users.FirstAsync(u => u.UserName == userName);
+            var schedules = await _context.Schedules.Where(s => s.UserId == user.Id &&
+                                                                s.ScheduleDate.Date > from.Date &&
+                                                                s.ScheduleDate.Date < to.Date)
+                                                    .ToListAsync();
+            var scheduleDtos = schedules.Select(s => new ScheduleDto(s));
+            return scheduleDtos.ToList();
         }
 
         public async Task<IEnumerable<SchedulePeriodDto>> GetSchedulePeriods(string userName, long scheduleId)
