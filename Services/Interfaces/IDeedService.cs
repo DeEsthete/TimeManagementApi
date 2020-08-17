@@ -10,6 +10,7 @@ namespace Services.Interfaces
     {
         Task<long> CreateDeed(string userName, DeedDto deedDto);
         Task UpdateDeed(string userName, DeedDto deedDto);
+        Task<DeedDto> GetDeedById(string userName, long id);
         Task<IEnumerable<DeedDto>> GetUserDeeds(string userName, bool isArchiveInclusive, string filter);
         Task<IEnumerable<DeedPeriodsCountDto>> GetDeedsPeriodsCount(string userName, DateTime from, DateTime to);
         Task ArchiveDeed(string userName, long id);

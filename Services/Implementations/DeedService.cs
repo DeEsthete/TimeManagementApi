@@ -44,6 +44,18 @@ namespace Services.Implementations
             await _context.SaveChangesAsync();
         }
 
+        public async Task<DeedDto> GetDeedById(string userName, long id)
+        {
+            var deed = await _context.Deeds.Include(d => d.User).FirstOrDefaultAsync(d => d.Id == id);
+
+            if (deed.User.UserName != userName)
+            {
+                throw new Exception("Deed does not belong to this user");
+            }
+
+            return new DeedDto(deed);
+        }
+
         public async Task<IEnumerable<DeedDto>> GetUserDeeds(string userName, bool isArchiveInclusive, string filter)
         {
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
@@ -82,7 +94,7 @@ namespace Services.Implementations
 
             if (deed.User.UserName != userName)
             {
-                throw new UnauthorizedAccessException("Deed does not belong to this user");
+                throw new Exception("Deed does not belong to this user");
             }
 
             deed.IsArchived = true;
@@ -96,7 +108,7 @@ namespace Services.Implementations
 
             if (deed.User.UserName != userName)
             {
-                throw new UnauthorizedAccessException("Deed does not belong to this user");
+                throw new Exception("Deed does not belong to this user");
             }
 
             deed.IsArchived = false;
