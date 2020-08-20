@@ -27,6 +27,11 @@ namespace Services.Implementations
                 throw new Exception("Can't select a past date");
             }
 
+            if (await _context.Schedules.AnyAsync(s => s.ScheduleDate.Date == scheduleDto.ScheduleDate.Date))
+            {
+                throw new Exception("Can't select already date");
+            }
+
             var schedule = scheduleDto.ToSchedule();
 
             var user = await _context.Users.FirstAsync(u => u.UserName == userName);
@@ -39,19 +44,11 @@ namespace Services.Implementations
 
         public async Task<long> AddSchedulePeriod(string userName, SchedulePeriodDto schedulePeriodDto)
         {
-            var user = _context.Users.FirstAsync(u => u.UserName == userName);
+            var user = await _context.Users.FirstAsync(u => u.UserName == userName);
             var schedule = await _context.Schedules.FirstAsync(s => s.Id == schedulePeriodDto.ScheduleId);
             if (schedule.UserId != user.Id)
             {
                 throw new Exception("Schedule does not belong to you");
-            }
-
-            var isInRange = await _context.SchedulePeriods.AnyAsync(m =>
-                DateChecker.DateRangeIsInRange(m.StartDate, m.EndDate, schedulePeriodDto.StartDate, schedulePeriodDto.EndDate)
-            );
-            if (isInRange)
-            {
-                throw new Exception("The period should not fall within the time frame of another period");
             }
 
             var schedulePeriod = schedulePeriodDto.ToSchedulePeriod();
